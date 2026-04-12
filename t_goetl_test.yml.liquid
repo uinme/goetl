@@ -1,0 +1,27 @@
+{% include 'env' %}
+in:
+  type: postgresql
+  host: {{mart_host}}
+  port: {{mart_port}}
+  user: {{mart_user}}
+  password: {{mart_password}}
+  database: {{mart_database}}
+  default_timezone: Asia/Tokyo
+  schema: public
+  query:
+    select 'test'
+
+out:
+  type: postgresql
+  host: {{mart_host}}
+  port: {{mart_port}}
+  user: {{mart_user}}
+  password: {{mart_password}}
+  database: {{mart_database}}
+  default_timezone: Asia/Tokyo
+  schema: public
+  table: t_goetl_test
+  mode: merge
+  merge_keys:
+    - col1
+    - col2
