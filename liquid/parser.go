@@ -27,6 +27,7 @@ func Parse(path string) ([]byte, error) {
 
 func includeHandler(name string, writer io.Writer, data map[string]interface{}) {
 	config := liquid.Configure().IncludeHandler(includeHandler)
+	// todo 入力ファイルのディレクトリと同じ階層のものを読み込むように修正
 	fileName := path.Join("./", "_"+name+".yml.liquid")
 	template, _ := liquid.ParseFile(fileName, config)
 	template.Render(writer, data)
