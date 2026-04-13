@@ -3,35 +3,40 @@ package main
 import "fmt"
 
 type ConfigSource struct {
-	In  InputSource
-	Out OutputSource
+	In  InputSource  `yaml:"in"`
+	Out OutputSource `yaml:"out"`
 }
 
 type InputSource struct {
-	Type_           string
-	Host            string
-	Port            int
-	User            string
-	Password        string
-	Database        string
-	Schema          string
-	DefaultTimezone string
-	Table           string
-	Query           string
+	Type_           string `yaml:"type"`
+	Host            string `yaml:"host"`
+	Port            int    `yaml:"port"`
+	User            string `yaml:"user"`
+	Password        string `yaml:"password"`
+	Database        string `yaml:"database"`
+	Schema          string `yaml:"schema"`
+	DefaultTimezone string `yaml:"default_timezone"`
+	Table           string `yaml:"table"`
+	Query           string `yaml:"query"`
+	BeforeSelect    string `yaml:"before_select"`
+	AfterSelect     string `yaml:"after_select"`
 }
 
 type OutputSource struct {
-	Type_           string
-	Host            string
-	Port            int
-	User            string
-	Password        string
-	Database        string
-	Schema          string
-	DefaultTimezone string
-	Table           string
-	Mode            string
-	MergeMode       string
+	Type_           string   `yaml:"type"`
+	Host            string   `yaml:"host"`
+	Port            int      `yaml:"port"`
+	User            string   `yaml:"user"`
+	Password        string   `yaml:"password"`
+	Database        string   `yaml:"databse"`
+	Schema          string   `yaml:"schema"`
+	DefaultTimezone string   `yaml:"default_timezone"`
+	Table           string   `yaml:"table"`
+	Mode            string   `yaml:"mode"`
+	MergeMode       string   `yaml:"merge_mode"`
+	MergeKeys       []string `yaml:"merge_keys"`
+	BeforeLoad      string   `yaml:"before_load"`
+	AfterLoad       string   `yaml:"after_load"`
 }
 
 type DbColumn struct {
@@ -80,9 +85,26 @@ type Etl struct {
 	outputPlugin OutputPlugin
 }
 
-func NewEtl(path string) (Etl, error) {
+func NewEtl(config ConfigSource) (Etl, error) {
+	etl := Etl{}
 
-	return Etl{}, nil
+	etl.config = config
+
+	switch config.In.Type_ {
+	case "postgresql":
+		etl.inputPlugin = &PgInputPlugin{}
+	default:
+		return etl, fmt.Errorf("%sは実装されていません", config.In.Type_)
+	}
+
+	switch config.Out.Type_ {
+	case "postgresql":
+		etl.outputPlugin = &PgOutputPlugin{}
+	default:
+		return etl, fmt.Errorf("%sは実装されていません", config.Out.Type_)
+	}
+
+	return etl, nil
 }
 
 func (e *Etl) Run() error {

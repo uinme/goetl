@@ -9,10 +9,10 @@ import (
 	"github.com/karlseguin/liquid"
 )
 
-func Parse(path string) (string, error) {
+func Parse(path string) ([]byte, error) {
 	content, err := os.ReadFile("C:/Users/uinme/go_workspace/etl/t_goetl_test.yml.liquid")
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	config := liquid.Configure().IncludeHandler(includeHandler)
@@ -22,7 +22,7 @@ func Parse(path string) (string, error) {
 	// todo 環境変数の値を取得して第2引数に渡す
 	template.Render(writer, nil)
 
-	return writer.String(), nil
+	return writer.Bytes(), nil
 }
 
 func includeHandler(name string, writer io.Writer, data map[string]interface{}) {
